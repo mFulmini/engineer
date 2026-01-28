@@ -1,0 +1,633 @@
+[
+    {
+        "id": "e44243c5f5dedbfa",
+        "type": "tab",
+        "label": "Płytka 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0a1944945b501bd3",
+        "type": "group",
+        "z": "e44243c5f5dedbfa",
+        "name": "Poziom naładowania",
+        "style": {
+            "label": true,
+            "stroke": "#0070c0"
+        },
+        "nodes": [
+            "f5018e75146687f2",
+            "24a4ad49ff3898d9",
+            "df07ce8a48603c11"
+        ],
+        "x": 474,
+        "y": 99,
+        "w": 512,
+        "h": 82
+    },
+    {
+        "id": "f4138260200198b9",
+        "type": "group",
+        "z": "e44243c5f5dedbfa",
+        "name": "Wejście",
+        "style": {
+            "label": true,
+            "stroke": "#ffff00"
+        },
+        "nodes": [
+            "127b5cee69bd8c36",
+            "2594d5868dcfe9e3"
+        ],
+        "x": 54,
+        "y": 199,
+        "w": 392,
+        "h": 82
+    },
+    {
+        "id": "98bb093a91f0b6b6",
+        "type": "group",
+        "z": "e44243c5f5dedbfa",
+        "name": "Logika sterująca żarówkami",
+        "style": {
+            "label": true,
+            "stroke": "#ff0000"
+        },
+        "nodes": [
+            "991c5536f1d4cf2e",
+            "73df53bbd5e2792c",
+            "c4ce40d79af4154c",
+            "086af2c662ecbe02",
+            "3e583766f1628b90",
+            "814a679627d8a34c",
+            "0da271c289366962"
+        ],
+        "x": 474,
+        "y": 199,
+        "w": 1172,
+        "h": 202
+    },
+    {
+        "id": "360116f5d8219ab9",
+        "type": "group",
+        "z": "e44243c5f5dedbfa",
+        "name": "Akwizycja danych",
+        "style": {
+            "stroke": "#777777",
+            "label": true
+        },
+        "nodes": [
+            "271b971619377731",
+            "51e4802ca46665cd",
+            "a93815c925edb060",
+            "28ffca0e8edee86c"
+        ],
+        "x": 474,
+        "y": 459,
+        "w": 532,
+        "h": 222
+    },
+    {
+        "id": "127b5cee69bd8c36",
+        "type": "mqtt in",
+        "z": "e44243c5f5dedbfa",
+        "g": "f4138260200198b9",
+        "name": "",
+        "topic": "inzynierka/plytka1/in",
+        "qos": "0",
+        "datatype": "utf8",
+        "broker": "087a268cc3290e05",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 240,
+        "wires": [
+            [
+                "2594d5868dcfe9e3"
+            ]
+        ]
+    },
+    {
+        "id": "991c5536f1d4cf2e",
+        "type": "trigger",
+        "z": "e44243c5f5dedbfa",
+        "g": "98bb093a91f0b6b6",
+        "name": "",
+        "op1": "1",
+        "op2": "0",
+        "op1type": "str",
+        "op2type": "str",
+        "duration": "10",
+        "extend": true,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 1070,
+        "y": 240,
+        "wires": [
+            [
+                "3e583766f1628b90"
+            ]
+        ]
+    },
+    {
+        "id": "814a679627d8a34c",
+        "type": "ui-switch",
+        "z": "e44243c5f5dedbfa",
+        "g": "98bb093a91f0b6b6",
+        "name": "Ręczny włącznik światła ",
+        "label": "Ręczne sterowanie oświetleniem",
+        "group": "6d96dae8622e8c73",
+        "order": 3,
+        "width": 3,
+        "height": 0,
+        "passthru": true,
+        "decouple": false,
+        "topic": "topic",
+        "topicType": "msg",
+        "style": "",
+        "className": "",
+        "layout": "row-spread",
+        "clickableArea": "switch",
+        "onvalue": "1",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "0",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 850,
+        "y": 360,
+        "wires": [
+            [
+                "0da271c289366962"
+            ]
+        ]
+    },
+    {
+        "id": "73df53bbd5e2792c",
+        "type": "switch",
+        "z": "e44243c5f5dedbfa",
+        "g": "98bb093a91f0b6b6",
+        "name": "SprawdźRuch",
+        "property": "payload.motion",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "70",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 580,
+        "y": 240,
+        "wires": [
+            [
+                "086af2c662ecbe02"
+            ]
+        ]
+    },
+    {
+        "id": "2594d5868dcfe9e3",
+        "type": "json",
+        "z": "e44243c5f5dedbfa",
+        "g": "f4138260200198b9",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 370,
+        "y": 240,
+        "wires": [
+            [
+                "73df53bbd5e2792c",
+                "271b971619377731",
+                "a93815c925edb060",
+                "f5018e75146687f2"
+            ]
+        ]
+    },
+    {
+        "id": "271b971619377731",
+        "type": "function",
+        "z": "e44243c5f5dedbfa",
+        "g": "360116f5d8219ab9",
+        "name": "Tłumaczenie danych",
+        "func": "var lux = Number(msg.payload.lux);\nvar motion = Number(msg.payload.motion);\nvar volt = Number(msg.payload.voltage);\n\nmsg.payload = {\n    natezenie_swiatla: lux,\n    wartosc_ruchu: motion,\n    napiecie_baterii: volt\n};\n\nmsg.tags = {\n    lokalizacja: \"pokoj\",\n    czujnik: \"plytka1\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 560,
+        "wires": [
+            [
+                "51e4802ca46665cd",
+                "28ffca0e8edee86c"
+            ]
+        ]
+    },
+    {
+        "id": "51e4802ca46665cd",
+        "type": "debug",
+        "z": "e44243c5f5dedbfa",
+        "g": "360116f5d8219ab9",
+        "name": "Podgląd Baza Danych",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 860,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "c4ce40d79af4154c",
+        "type": "mqtt out",
+        "z": "e44243c5f5dedbfa",
+        "g": "98bb093a91f0b6b6",
+        "name": "",
+        "topic": "inzynierka/plytka1/bulb",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "087a268cc3290e05",
+        "x": 1520,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "086af2c662ecbe02",
+        "type": "function",
+        "z": "e44243c5f5dedbfa",
+        "g": "98bb093a91f0b6b6",
+        "name": "SprawdźOśw",
+        "func": "var swiatloWlaczone = flow.get(\"czy_swieci\") || \"0\";\nvar lux = msg.payload.lux;\nif (swiatloWlaczone === \"0\" && lux > 5) {\n    return null; \n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 240,
+        "wires": [
+            [
+                "991c5536f1d4cf2e"
+            ]
+        ]
+    },
+    {
+        "id": "3e583766f1628b90",
+        "type": "change",
+        "z": "e44243c5f5dedbfa",
+        "g": "98bb093a91f0b6b6",
+        "name": "CzyŚwieci",
+        "rules": [
+            {
+                "t": "set",
+                "p": "czy_swieci",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1290,
+        "y": 240,
+        "wires": [
+            [
+                "c4ce40d79af4154c"
+            ]
+        ]
+    },
+    {
+        "id": "0da271c289366962",
+        "type": "change",
+        "z": "e44243c5f5dedbfa",
+        "g": "98bb093a91f0b6b6",
+        "name": "Manual",
+        "rules": [
+            {
+                "t": "set",
+                "p": "tryb_reczny",
+                "pt": "flow",
+                "to": "msg.payload",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1120,
+        "y": 360,
+        "wires": [
+            [
+                "c4ce40d79af4154c"
+            ]
+        ]
+    },
+    {
+        "id": "a93815c925edb060",
+        "type": "debug",
+        "z": "e44243c5f5dedbfa",
+        "g": "360116f5d8219ab9",
+        "name": "Podgląd ESP",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 570,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "f5018e75146687f2",
+        "type": "function",
+        "z": "e44243c5f5dedbfa",
+        "g": "0a1944945b501bd3",
+        "name": "Ile% ?",
+        "func": "\nvar napiecie = msg.payload.voltage; \nvar procent = ((napiecie - 3.0) / (4.2 - 3.0)) * 100;\nif (procent > 100) procent = 100;\nif (procent < 0) procent = 0;\nmsg.payload = Math.round(procent); \nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 140,
+        "wires": [
+            [
+                "df07ce8a48603c11"
+            ]
+        ]
+    },
+    {
+        "id": "24a4ad49ff3898d9",
+        "type": "ui-gauge",
+        "z": "e44243c5f5dedbfa",
+        "g": "0a1944945b501bd3",
+        "name": "Moduł 1",
+        "group": "6d96dae8622e8c73",
+        "order": 2,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 3,
+        "height": "3",
+        "gtype": "gauge-battery",
+        "gstyle": "needle",
+        "title": "Poziom naładowania ",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "units",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "20",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "60",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "100",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 900,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "df07ce8a48603c11",
+        "type": "smooth",
+        "z": "e44243c5f5dedbfa",
+        "g": "0a1944945b501bd3",
+        "name": "",
+        "property": "payload",
+        "action": "mean",
+        "count": "10",
+        "round": "",
+        "mult": "multi",
+        "reduce": false,
+        "x": 720,
+        "y": 140,
+        "wires": [
+            [
+                "24a4ad49ff3898d9"
+            ]
+        ]
+    },
+    {
+        "id": "28ffca0e8edee86c",
+        "type": "influxdb out",
+        "z": "e44243c5f5dedbfa",
+        "g": "360116f5d8219ab9",
+        "influxdb": "55ac29e3c71fcd5c",
+        "name": "plytka1_data",
+        "measurement": "sensor_pomiary",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "s",
+        "retentionPolicyV18Flux": "",
+        "org": "Inzynierka",
+        "bucket": "plytka1_data",
+        "x": 830,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "087a268cc3290e05",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.1.200",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "6d96dae8622e8c73",
+        "type": "ui-group",
+        "name": "Moduł 1",
+        "page": "c75d75e233e7572a",
+        "width": 6,
+        "height": 1,
+        "order": 2,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "55ac29e3c71fcd5c",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": 8086,
+        "protocol": "http",
+        "database": "database",
+        "name": "plytka1_data",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://localhost:8086",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "c75d75e233e7572a",
+        "type": "ui-page",
+        "name": "Mój dom",
+        "ui": "aa35322ef53bf599",
+        "path": "/DOM",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "78552ff9b7d956e2",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "aa35322ef53bf599",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "78552ff9b7d956e2",
+        "type": "ui-theme",
+        "name": "Theme Name",
+        "colors": {
+            "surface": "#517dc2",
+            "primary": "#0094ce",
+            "bgPage": "#d1e4ea",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "11a93f5a278cc788",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.29.0",
+            "node-red-node-smooth": "0.1.2",
+            "node-red-contrib-influxdb": "0.7.0"
+        }
+    }
+]
