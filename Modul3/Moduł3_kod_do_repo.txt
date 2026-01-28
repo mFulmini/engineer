@@ -1,0 +1,105 @@
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include "DHT.h"
+
+//Definiowanie pinów i typów
+#define DHTPIN D0      
+#define RELAY_PIN D2   
+#define DHTTYPE DHT22
+
+//Konfiguracja sieci WiFi i serwera MQTT
+const char* ssid = "Projekt_WIFI";
+const char* password = NULL; 
+const char* mqtt_server = "192.168.1.200"; 
+
+//Inicjalizacja obiektów
+WiFiClient espClient;
+PubSubClient client(espClient);
+DHT dht(DHTPIN, DHTTYPE);
+
+//Wprowadzenie zmiennych globalnych
+float tempMata = 0.0, tempPokoj = 0.0, targetTemp = 22.0; //Domyślne nastawy parametrów
+int currentMode = 0;    
+int manual = 0;    //0=OFF, 1=ON
+bool isHeating = false; //Aktualny stan ogrzewnia (domyślnie wyłączone)
+
+//Funkcje pomocnicze
+void setup() {
+  Serial.begin(115200); 
+  pinMode(RELAY_PIN, OUTPUT);    //Ustawienie pinu przekaźnika jako wyjście
+  digitalWrite(RELAY_PIN, LOW);  //Domyślnie wyłącz ogrzewanie
+  
+  //Połączenie z WiFi i MQTT
+  dht.begin();
+  WiFi.begin(ssid, password); 
+  while (WiFi.status() != WL_CONNECTED) delay(500);
+  
+  //Konfiguracja MQTT
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+}
+
+//Obsługa przychodzących komunikatów MQTT
+void callback(char* topic, byte* payload, unsigned int length) {
+  String msg = "";
+  for (int i = 0; i < length; i++) msg += (char)payload[i];
+  String t = String(topic);
+
+  //Nadpisywanie zmiennych na podstawie komunikatów
+  if (t.endsWith("room_temp")) tempPokoj = msg.toFloat();
+  if (t.endsWith("target")) targetTemp = msg.toFloat();
+  if (t.endsWith("mode")) currentMode = msg.toInt();
+  if (t.endsWith("manual_power")) manual = msg.toInt();
+}
+
+//Ponowne łączenie z serwerem MQTT  
+void reconnect() {
+  while (!client.connected()) {
+    if (client.connect("ESP32_P3")) {
+      client.subscribe("inzynierka/plytka3/room_temp");
+      client.subscribe("inzynierka/plytka3/target");
+      client.subscribe("inzynierka/plytka3/mode");
+      client.subscribe("inzynierka/plytka3/manual_power");
+    } else delay(5000);
+  }
+}
+
+//Główna pętla 
+void loop() {
+  if (!client.connected()) reconnect(); //Sprawdzenie połączenia MQTT
+  client.loop();
+
+  static unsigned long lastTime = 0;  
+  if (millis() - lastTime > 2000) { //Odczyt co 2 sekundy
+    lastTime = millis();
+    
+    float reading = dht.readTemperature(); 
+    if (!isnan(reading)) tempMata = reading; //Aktualizacja temperatury maty grzewczej
+
+    //Logika sterowania ogrzewaniem
+    bool newState = false;
+
+    //Wyłączenie maty grzewczej w przypadku temperatury wyższej niż zaleca producent
+    if (tempMata >= 60.0) {
+      newState = false;
+    } 
+    //Włączenie trybu manual
+    else if (currentMode == 1) { 
+      newState = (manual == 1);
+    } 
+    //Tryb automatyczny
+    else {
+      if (tempPokoj < (targetTemp - 0.5)) newState = true;
+      else if (tempPokoj > targetTemp) newState = false;
+      else newState = isHeating; // Histereza
+    }
+
+    //Aktualizacja stanu ogrzewania w zależności od logiki
+    isHeating = newState;
+    digitalWrite(RELAY_PIN, isHeating ? HIGH : LOW);
+
+    //Wysyłanie danych do serwera MQTT
+    String json = "{\"t_mata\":" + String(tempMata, 1) + ",\"heat\":" + String(isHeating) + "}";
+    client.publish("inzynierka/plytka3/in", json.c_str());
+  }
+}
