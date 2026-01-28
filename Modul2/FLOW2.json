@@ -1,0 +1,890 @@
+[
+    {
+        "id": "d13d58912e3cf920",
+        "type": "tab",
+        "label": "Płytka 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9dda5e97fbef9248",
+        "type": "group",
+        "z": "d13d58912e3cf920",
+        "name": "Wgranie czasu",
+        "style": {
+            "stroke": "#777777",
+            "label": true
+        },
+        "nodes": [
+            "468f96a44271b1a9",
+            "4e049609c1961ff7",
+            "ab249e25022bc109"
+        ],
+        "x": 254,
+        "y": 179,
+        "w": 652,
+        "h": 82
+    },
+    {
+        "id": "d1ac82fff72233fc",
+        "type": "group",
+        "z": "d13d58912e3cf920",
+        "name": "Przetwarzanie danych",
+        "style": {
+            "label": true,
+            "stroke": "#ffC000"
+        },
+        "nodes": [
+            "866010828827bc2e",
+            "2d857a8a0f4f4256",
+            "f4afd9bd3465eca5",
+            "10f2d1ee863dfde4",
+            "37621581e88ec639",
+            "41f5a7fcaebe64f7",
+            "4d360c0f077362f3",
+            "2275f1aec2c803a8",
+            "8fa2447390fa4e7d",
+            "b58a7c7e1f522c15",
+            "82d89ae83e4b0f3d",
+            "f5a97bca9a90434a"
+        ],
+        "x": 254,
+        "y": 299,
+        "w": 1312,
+        "h": 382
+    },
+    {
+        "id": "4a6d680e9ac66bfc",
+        "type": "group",
+        "z": "d13d58912e3cf920",
+        "name": "Autoryzacja dostępu",
+        "style": {
+            "stroke": "#001f60",
+            "label": true
+        },
+        "nodes": [
+            "49502952f6f2ee3a",
+            "a5a3d0b6b05e5f3f",
+            "dd08d74d2969ff48",
+            "297a07e568373812",
+            "0e0fda10c4be1e23",
+            "61a9987f98f7ac68",
+            "3f7243d8f9b1e3db"
+        ],
+        "x": 254,
+        "y": 779,
+        "w": 972,
+        "h": 222
+    },
+    {
+        "id": "dad352c0470560cd",
+        "type": "group",
+        "z": "d13d58912e3cf920",
+        "name": "Sterowanie ręczne",
+        "style": {
+            "stroke": "#ff0000",
+            "label": true
+        },
+        "nodes": [
+            "ed85b4cb1267f647",
+            "54505ac27f71046f",
+            "c5932ba786869ef4"
+        ],
+        "x": 254,
+        "y": 1059,
+        "w": 652,
+        "h": 162
+    },
+    {
+        "id": "866010828827bc2e",
+        "type": "mqtt in",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "name": "",
+        "topic": "inzynierka/plytka2/in",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "087a268cc3290e05",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 370,
+        "y": 340,
+        "wires": [
+            [
+                "2d857a8a0f4f4256"
+            ]
+        ]
+    },
+    {
+        "id": "468f96a44271b1a9",
+        "type": "inject",
+        "z": "d13d58912e3cf920",
+        "g": "9dda5e97fbef9248",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 370,
+        "y": 220,
+        "wires": [
+            [
+                "4e049609c1961ff7"
+            ]
+        ]
+    },
+    {
+        "id": "4e049609c1961ff7",
+        "type": "function",
+        "z": "d13d58912e3cf920",
+        "g": "9dda5e97fbef9248",
+        "name": "Czas",
+        "func": "var d = new Date();\nvar h = d.getHours().toString().padStart(2, '0');\nvar m = d.getMinutes().toString().padStart(2, '0');\nvar day = d.getDate().toString().padStart(2, '0');\nvar month = (d.getMonth() + 1).toString().padStart(2, '0');\nvar yr = d.getFullYear().toString().substr(-2);\n\n\nmsg.payload = h + \":\" + m + \" \" + day + \".\" + month + \".\" + yr;\nmsg.topic = \"inzynierka/plytka2/time\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 220,
+        "wires": [
+            [
+                "ab249e25022bc109"
+            ]
+        ]
+    },
+    {
+        "id": "ab249e25022bc109",
+        "type": "mqtt out",
+        "z": "d13d58912e3cf920",
+        "g": "9dda5e97fbef9248",
+        "name": "",
+        "topic": "inzynierka/plytka2/time",
+        "qos": "0",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "087a268cc3290e05",
+        "x": 780,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "2d857a8a0f4f4256",
+        "type": "json",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 570,
+        "y": 340,
+        "wires": [
+            [
+                "f4afd9bd3465eca5",
+                "10f2d1ee863dfde4"
+            ]
+        ]
+    },
+    {
+        "id": "f4afd9bd3465eca5",
+        "type": "debug",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "name": "Podgląd pomiary",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 790,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "49502952f6f2ee3a",
+        "type": "mqtt in",
+        "z": "d13d58912e3cf920",
+        "g": "4a6d680e9ac66bfc",
+        "name": "",
+        "topic": "inzynierka/plytka2/access",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "087a268cc3290e05",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 390,
+        "y": 820,
+        "wires": [
+            [
+                "0e0fda10c4be1e23"
+            ]
+        ]
+    },
+    {
+        "id": "a5a3d0b6b05e5f3f",
+        "type": "function",
+        "z": "d13d58912e3cf920",
+        "g": "4a6d680e9ac66bfc",
+        "name": "Wyświetlanie UID",
+        "func": "let data = msg.payload;\n\n//Wyciąganie UID i czyszczenie tekstu\nlet uid = (data && data.uid) ? data.uid : data;\nif (typeof uid === 'string') {\n    uid = uid.replace(/[\"{}]/g, \"\").replace(\"uid:\", \"\").trim();\n}\n\n//Rozpoznanie osoby\nlet name;\nif (uid === \"17 FF 89 04\") {\n    name = \"Mateusz\";\n} else {\n    // Tutaj dodajemy Twój opis dla obcych kart\n    name = \"Nieznany - nie przyznano\";\n}\n\n//Payload dla dashboardu\nmsg.payload = name; \n\n//Definicja danych dla dashboardu\nmsg.measurement = \"Dostęp\";\nmsg.fields = {\n    value: name,\n    card_uid: uid\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 810,
+        "y": 820,
+        "wires": [
+            [
+                "dd08d74d2969ff48",
+                "61a9987f98f7ac68",
+                "297a07e568373812"
+            ]
+        ]
+    },
+    {
+        "id": "10f2d1ee863dfde4",
+        "type": "function",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "name": "Tłumaczenie danych",
+        "func": "// 1. Sprawdź, czy dane to tekst. Jeśli tak, zamień je na obiekt.\nlet data;\nif (typeof msg.payload === 'string') {\n    try {\n        data = JSON.parse(msg.payload);\n    } catch (e) {\n        node.error(\"Błąd parsowania JSON: \" + e.message);\n        return null;\n    }\n\n} else {\n    data = msg.payload;\n}\n\n// 2. Teraz bezpiecznie pobierz wartości z obiektu 'data'\nvar temp = Number(data.t);\nvar hum = Number(data.h);\nvar al = Number(data.alarm);\n// 3. Przygotuj payload dla InfluxDB\n\nmsg.payload = {\n    temperatura: temp,\n    wilgotnosc: hum,\n    alarm_wlamanie: al\n\n};\n\n// 4. Dodaj tagi (zgodnie z obrazkiem image_a61503.png)\nmsg.tags = {\n    modul: \"plytka2_wejscie\"\n};\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 500,
+        "wires": [
+            [
+                "37621581e88ec639",
+                "41f5a7fcaebe64f7",
+                "4d360c0f077362f3",
+                "8fa2447390fa4e7d",
+                "b58a7c7e1f522c15"
+            ]
+        ]
+    },
+    {
+        "id": "37621581e88ec639",
+        "type": "debug",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "name": "Podgląd ESP",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 1080,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "41f5a7fcaebe64f7",
+        "type": "influxdb out",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "influxdb": "f435c7050fbb0bc1",
+        "name": "plytka2_data",
+        "measurement": "Data",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "s",
+        "retentionPolicyV18Flux": "",
+        "org": "Inzynierka",
+        "bucket": "plytka2_data",
+        "x": 1070,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "dd08d74d2969ff48",
+        "type": "ui-text",
+        "z": "d13d58912e3cf920",
+        "g": "4a6d680e9ac66bfc",
+        "group": "0c9c01f4c293cdb2",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "Ostatnia autoryzacja",
+        "label": "Ostatnia autoryzacja",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1100,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "4d360c0f077362f3",
+        "type": "function",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "name": "Logika statusu",
+        "func": "//Sprawdzenie czy alarm był aktywny w poprzednim cyklu\nlet alarmActive = context.get('alarmActive') || false;\n\n//Sprawdzenie czy jest włamanie\nlet isBreach = (msg.payload.alarm_wlamanie === 1 || msg.payload.alarm === 1);\n\nlet msgStatus = { payload: isBreach ? \"!!! WŁAMANIE !!!\" : \"ZABEZPIECZONY\" };\nlet msgNotify = null;\n\n//Wyślij powiadomienie tylko jeżeli jest włamanie i status flagi to true\nif (isBreach && !alarmActive) {\n    msgNotify = {\n        payload: \"ALARM!!! NIEAUTORYZOWANY DOSTĘP\",\n        topic: \"CRITICAL\"\n    };\n    //Jeżeli alarm ustaw status flagi na true i zapisz dla następnego cyklu\n    context.set('alarmActive', true);\n}\n\n//Jeśli alarm minął zmień status flagi na false\nif (!isBreach && alarmActive) {\n    context.set('alarmActive', false);\n}\n\n//Payload msgStatus dla węzła template\n//Payload msgNotify dla węzła powiadomienie o włamaniu\nreturn [msgStatus, msgNotify];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1080,
+        "y": 520,
+        "wires": [
+            [
+                "82d89ae83e4b0f3d"
+            ],
+            [
+                "2275f1aec2c803a8"
+            ]
+        ]
+    },
+    {
+        "id": "2275f1aec2c803a8",
+        "type": "ui-notification",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "ui": "aa35322ef53bf599",
+        "position": "center center",
+        "colorDefault": false,
+        "color": "#e72323",
+        "displayTime": "0",
+        "showCountdown": true,
+        "outputs": 1,
+        "allowDismiss": true,
+        "dismissText": "Zamknij",
+        "allowConfirm": false,
+        "confirmText": "Confirm",
+        "raw": true,
+        "className": "",
+        "name": "Powiadomienie o włamaniu",
+        "x": 1400,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8fa2447390fa4e7d",
+        "type": "ui-gauge",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "name": "Temperatura",
+        "group": "3d0aa5339953fe9a",
+        "order": 2,
+        "value": "payload.temperatura",
+        "valueType": "msg",
+        "width": "3",
+        "height": "3",
+        "gtype": "gauge-half",
+        "gstyle": "rounded",
+        "title": "Temperatura  w pomieszczeniu",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "",
+        "icon": "",
+        "prefix": "",
+        "suffix": "°C",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5033e1",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "13",
+                "color": "#e5e1e1",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "23",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "50",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 1070,
+        "y": 380,
+        "wires": [
+            [
+                "f5a97bca9a90434a"
+            ]
+        ]
+    },
+    {
+        "id": "b58a7c7e1f522c15",
+        "type": "ui-gauge",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "name": "Wilgotność",
+        "group": "3d0aa5339953fe9a",
+        "order": 1,
+        "value": "payload.wilgotnosc",
+        "valueType": "msg",
+        "width": "3",
+        "height": "3",
+        "gtype": "gauge-half",
+        "gstyle": "rounded",
+        "title": "Wilgotność",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "",
+        "icon": "",
+        "prefix": "",
+        "suffix": "%",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#d6af5c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "30",
+                "color": "#5ad00b",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "60",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "100",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 1070,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ed85b4cb1267f647",
+        "type": "ui-button",
+        "z": "d13d58912e3cf920",
+        "g": "dad352c0470560cd",
+        "group": "0c9c01f4c293cdb2",
+        "name": "Otwarcie drzwi",
+        "label": "Otwarcie drzwi",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "ui-button-success",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "1",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "buttonColor": "",
+        "textColor": "",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 360,
+        "y": 1100,
+        "wires": [
+            [
+                "c5932ba786869ef4"
+            ]
+        ]
+    },
+    {
+        "id": "54505ac27f71046f",
+        "type": "ui-button",
+        "z": "d13d58912e3cf920",
+        "g": "dad352c0470560cd",
+        "group": "0c9c01f4c293cdb2",
+        "name": "Wyłącz alarm",
+        "label": "Wyłącz alarm",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "ui-button-danger",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "1",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "buttonColor": "",
+        "textColor": "",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 360,
+        "y": 1180,
+        "wires": [
+            [
+                "c5932ba786869ef4"
+            ]
+        ]
+    },
+    {
+        "id": "c5932ba786869ef4",
+        "type": "mqtt out",
+        "z": "d13d58912e3cf920",
+        "g": "dad352c0470560cd",
+        "name": "",
+        "topic": "inzynierka/plytka2/out",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "087a268cc3290e05",
+        "x": 780,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "297a07e568373812",
+        "type": "influxdb out",
+        "z": "d13d58912e3cf920",
+        "g": "4a6d680e9ac66bfc",
+        "influxdb": "f435c7050fbb0bc1",
+        "name": "plytka2_data",
+        "measurement": "Dostęp",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "s",
+        "retentionPolicyV18Flux": "",
+        "org": "Inzynierka",
+        "bucket": "plytka2_data",
+        "x": 1070,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "82d89ae83e4b0f3d",
+        "type": "ui-template",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "group": "0c9c01f4c293cdb2",
+        "page": "",
+        "ui": "",
+        "name": "",
+        "order": 3,
+        "width": "6",
+        "height": "2",
+        "head": "",
+        "format": "<style>\n    /* --- NAPRAWA POWIADOMIENIA (TOAST) --- */\n    /* To wymusza, żeby dymek był zawsze na wierzchu i na środku */\n    md-toast.md-center {\n        position: fixed !important;\n        left: 50% !important;\n        top: 50% !important;\n        transform: translate(-50%, -50%) !important;\n        z-index: 9999 !important; /* Najważniejsza linia - wyciąga powiadomienie na wierzch */\n        width: auto !important;\n        min-width: 300px !important;\n    }\n    \n    md-toast .md-toast-content {\n        background-color: #d32f2f !important;\n        color: white !important;\n        font-size: 28px !important;\n        font-weight: bold !important;\n        padding: 30px !important;\n        border: 4px solid white !important;\n        box-shadow: 0 0 30px rgba(0,0,0,0.5) !important;\n        text-align: center;\n    }\n\n    /* --- ANIMACJA MRUGANIA TEKSTU PRZY ALARMIE --- */\n    @keyframes mruganie { 0% { opacity: 1; color: red; } 50% { opacity: 0.5; color: #8b0000; } 100% { opacity: 1; color: red; } }\n</style>\n\n<div style=\"\n    width: 100%; \n    height: 100%; \n    display: flex; \n    justify-content: space-between; \n    align-items: center; \n    padding: 0 25px; \n    box-sizing: border-box; \n    background-color: #ffffff !important; \n    border-radius: 8px; \n    border: 2px solid #bbb;  /* <--- TU JEST OBWÓDKA */\n    box-shadow: 0 4px 8px rgba(0,0,0,0.2);\"> <div style=\"font-size: 14px; font-weight: bold; color: #555; text-transform: uppercase;\">\n        STATUS ZAMKA:\n    </div>\n\n    <div style=\"font-size: 24px; font-weight: 900;\"\n         ng-style=\"{\n            'color': (msg.payload || '').indexOf('WŁAMANIE') !== -1 ? 'red' : 'black',\n            'animation': (msg.payload || '').indexOf('WŁAMANIE') !== -1 ? 'mruganie 1s infinite' : 'none'\n         }\">\n        {{msg.payload || 'OCZEKIWANIE...'}}\n    </div>\n</div>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1340,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0e0fda10c4be1e23",
+        "type": "json",
+        "z": "d13d58912e3cf920",
+        "g": "4a6d680e9ac66bfc",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 590,
+        "y": 820,
+        "wires": [
+            [
+                "a5a3d0b6b05e5f3f",
+                "3f7243d8f9b1e3db"
+            ]
+        ]
+    },
+    {
+        "id": "61a9987f98f7ac68",
+        "type": "debug",
+        "z": "d13d58912e3cf920",
+        "g": "4a6d680e9ac66bfc",
+        "name": "Podgląd Dostęp",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 1090,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "3f7243d8f9b1e3db",
+        "type": "debug",
+        "z": "d13d58912e3cf920",
+        "g": "4a6d680e9ac66bfc",
+        "name": "Podgląd Dostęp",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 790,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "f5a97bca9a90434a",
+        "type": "mqtt out",
+        "z": "d13d58912e3cf920",
+        "g": "d1ac82fff72233fc",
+        "name": "",
+        "topic": "inzynierka/plytka3/room_temp",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "087a268cc3290e05",
+        "x": 1410,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "087a268cc3290e05",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.1.200",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "f435c7050fbb0bc1",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": 8086,
+        "protocol": "http",
+        "database": "database",
+        "name": "plytka2_data",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://localhost:8086",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "0c9c01f4c293cdb2",
+        "type": "ui-group",
+        "name": "Wejście ",
+        "page": "c75d75e233e7572a",
+        "width": 6,
+        "height": 1,
+        "order": 4,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "aa35322ef53bf599",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "3d0aa5339953fe9a",
+        "type": "ui-group",
+        "name": "Warunki w pomieszczeniu",
+        "page": "c75d75e233e7572a",
+        "width": 6,
+        "height": "3",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "c75d75e233e7572a",
+        "type": "ui-page",
+        "name": "Mój dom",
+        "ui": "aa35322ef53bf599",
+        "path": "/DOM",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "78552ff9b7d956e2",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "78552ff9b7d956e2",
+        "type": "ui-theme",
+        "name": "Theme Name",
+        "colors": {
+            "surface": "#517dc2",
+            "primary": "#0094ce",
+            "bgPage": "#d1e4ea",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "fbfac9a7203dc5f8",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-influxdb": "0.7.0",
+            "@flowfuse/node-red-dashboard": "1.29.0"
+        }
+    }
+]
