@@ -1,0 +1,158 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include <Adafruit_VEML7700.h>
+#include <Adafruit_INA219.h>
+
+//Konfiguracja pinów
+#define SDA_PIN 6
+#define SCL_PIN 7
+#define LED_PIN 0
+#define TMOS_ADDR 0x5A
+
+//Parametry filtra czujnika TMOS PIR
+const float ALPHA_NORMAL = 0.05;
+const float ALPHA_HOLD   = 0.001;
+const float ALPHA_FAST   = 0.5;
+const int PRESENCE_THRESHOLD = 60;
+
+//Konfiguracja komunikacji z jednostką centralną
+const char* ssid = "Projekt_WIFI";
+const char* password = NULL;
+const char* mqtt_server = "192.168.1.200";
+const char* TOPIC_IN = "inzynierka/plytka1/in";
+const char* TOPIC_OUT = "inzynierka/plytka1/out";
+
+//Definiowanie obiektów i zmiennych lokalnych
+WiFiClient espClient;
+PubSubClient client(espClient);
+Adafruit_VEML7700 veml = Adafruit_VEML7700();
+Adafruit_INA219 ina219;
+
+float dynamicBaseline = 0;	//tło cieplne
+float maxSignalInWindow = 0;	//zapis najwyższej wartości z ostatnich 250ms
+unsigned long lastMsgTime = 0;	
+const long interval = 250;	//Przesyłanie danych do jednostki centralnej co 250ms
+
+//Funkcje pomocnicze I2C pozwalające na bezpośredni zapis parametrów konfiguracyjnych do rejestrów sterujących czujników
+void writeReg(uint8_t addr, uint8_t reg, uint8_t value) {
+  Wire.beginTransmission(addr);
+  Wire.write(reg);
+  Wire.write(value);
+  Wire.endTransmission();
+}
+
+//Zapis 16-bitowy odczyt surowych danych pomiarowych
+int16_t readReg16(uint8_t addr, uint8_t reg) { 
+  Wire.beginTransmission(addr);
+  Wire.write(reg);
+  Wire.endTransmission(false);
+  Wire.requestFrom(addr, (uint8_t)2);
+  if (Wire.available() == 2) {
+    uint8_t low = Wire.read();
+    uint8_t high = Wire.read();
+    return (int16_t)((high << 8) | low);
+  }
+  return 0;
+}
+
+//Konfiguracja połączenia z brokerem MQTT
+void reconnect() {
+
+  //Pętla działająca do momentu uzyskania połączenia
+  while (!client.connected()) {
+
+  //Generowanie unikalnego ID klienta dla każdej sesji połączenia
+    String clientId = "ESP32-SmartSensor-" + String(random(0xffff), HEX);
+
+  //Próba połączenia z brokerem i subskrypcja tematu sterującego po sukcesie
+    if (client.connect(clientId.c_str())) {
+      client.subscribe(TOPIC_OUT);
+    } 
+    else 
+    {
+      delay(2000); //Próba łączenia co 2 sekundy w przypadku niepowodzenia
+    }
+  }
+}
+
+//Logika filtracji i adaptacji tła termicznego czujnika TMOS
+void updateTMOS() {
+  int16_t tmosRaw = readReg16(TMOS_ADDR, 0x26);	//Odczyt surowych danych
+
+  //Obliczenie różnicy między pomiarem a dynamicznym tłem otoczenia
+  float rawDiff = tmosRaw - dynamicBaseline;	
+  float signal = (rawDiff > 0) ? rawDiff : 0;
+
+  //Zapamiętanie najsilniejszego sygnału w danym oknie czasowym dla MQTT
+  if (signal > maxSignalInWindow) 
+  maxSignalInWindow = signal;
+
+  //Dostosowywanie tła do zmian temperatury w pokoju
+  if (rawDiff < 0) {
+    dynamicBaseline = (dynamicBaseline * (1.0 - ALPHA_FAST)) + (tmosRaw * ALPHA_FAST);
+  } 
+  else
+  // Wykrycie obecności i dobór tempa aktualizacji tła (zamrożenie przy detekcji)
+  {
+    bool presenceDetected = (signal > PRESENCE_THRESHOLD);
+    float alpha = (presenceDetected) ? ALPHA_HOLD : ALPHA_NORMAL;
+    dynamicBaseline = (dynamicBaseline * (1.0 - alpha)) + (tmosRaw * alpha);
+  }
+}
+
+//Konfiguracja pinów oraz magistrali po uruchomieniu modułu
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Wire.begin(SDA_PIN, SCL_PIN);
+  
+  //Nawiązanie połączenia z siecią bezprzewodową Wi-Fi
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) delay(500);
+
+  //Konfiguracja serwera MQTT i funkcji obsługi wiadomości przychodzących
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(mqttCallback);
+
+  //Inicjalizacje układów czujników TMOS, VEML oraz INA219
+  writeReg(TMOS_ADDR, 0x20, 0x0C); 
+  veml.begin(&Wire);
+  ina219.begin(&Wire);
+
+  long sum = 0;
+  for(int i=0; i<50; i++) {
+    sum += readReg16(TMOS_ADDR, 0x26);
+    delay(20);
+  }
+  dynamicBaseline = sum / 50.0;
+}
+
+//Główna pętla programu
+void loop() {
+  //Nadzór nad połączeniem z brokerem MQTT i obsługa komunikatów przychodzących
+  if (!client.connected()) reconnect();
+  client.loop();
+
+  //Ciągła aktualizacja filtra tła TMOS
+  updateTMOS();
+
+  
+  //Przesyłanie danych po MQTT w interwale 250ms
+  if (millis() - lastMsgTime > interval) {
+    lastMsgTime = millis();
+    
+    //Agregacja pomiarów ze wszystkich czujników do formatu JSON
+    String json = "{";
+    json += "\"lux\":" + String(veml.readLux()) + ",";
+    json += "\"motion\":" + String((int)maxSignalInWindow) + ",";
+    json += "\"voltage\":" + String(ina219.getBusVoltage_V()) + ",";
+    json += "\"current\":" + String(ina219.getCurrent_mA()) + ",";
+    json += "\"power\":" + String(ina219.getPower_mW());
+    json += "}";
+
+    client.publish(TOPIC_IN, json.c_str()); //Publikacja pakietu danych do brokera MQTT 
+    maxSignalInWindow = 0; //Reset licznika szczytowej wartości ruchu TMOS
+  }
+  delay(10); 
+}
